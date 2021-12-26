@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="index.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="imageContainer">
+            <img src="https://logodownload.org/wp-content/uploads/2017/05/marvel-logo-4.png" />
+        </div>
+        <div class="searchBox">
+            <input id="query" onchange="throttleFunction()" placeholder="Type any character" />
+            <i id="searchIcon" class="fa fa-search" style="font-size:36px"></i>
+        </div>
+        <div id="inputResults"></div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    let character_div = document.getElementById("inputResults");
+
+    var timerId;
+
+    function throttleFunction() {
+        if (timerId) {
+            return false
+        }
+        timerId = setTimeout(() => {
+            main();
+            timerId = undefined
+        }, 500)
+    }
+
+    async function Marvel() {
+        let query = document.getElementById('query').value
+        if (query.length <= 2) {
+            return false
+        }
+        let chars = await fetch(`https://gateway.marvel.com:443/v1/public/characters?&ts=1&apikey=fc24ed583466e092d3367d6b85ad26bb&hash=7e69016c7373d77a13d427d8ce6ad7d7&nameStartsWith=${query}`);
+        let data = await chars.json();
+        let marvelData = data.data.results
+        return marvelData
+    }
+
+    function appendChars(results) {
+        console.log(results)
+        character_div.innerHTML = null;
+        results.forEach(({ name }) => {
+            let heading2 = document.createElement("h3");
+            heading2.setAttribute("id", "charNames")
+            heading2.innerText = name;
+            character_div.append(heading2)
+        })
+    }
+
+
+
+    async function main() {
+        let characters = await Marvel();
+        appendChars(characters)
+    }
+
+
+</script>
+
+
+<!-- Your public key :- fc24ed583466e092d3367d6b85ad26bb -->
+<!-- Your private key :- 99801fb7ac11f3ef7d8f038c63407a80df93a482 -->
